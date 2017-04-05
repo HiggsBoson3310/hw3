@@ -72,7 +72,7 @@ def integrate(p1,p2,p3):
 	
 	
 	return [x1,y1,x2,y2,x3,y3]
-
+#Esta funcion calcula la posicion relativa entre el troyano y el planeta. Recibe como parametro la posicion en x del planeta, en y del planeta, en x del troyano y en y del troyano. Retorna una lista con las listas de x y de y en el marco del planeta
 def relative (xp,yp, xt, yt):
 	xr =[]
 	yr=[]
@@ -83,46 +83,58 @@ def relative (xp,yp, xt, yt):
 	
 
 	
-
+#Definimos las posiciones del punto 5 de Lagrange
 x = 100*np.cos(np.pi/3)
 y = 100*np.sin(np.pi/3)
+#Y la velocidad adecuada, en el punto 5 de Lagrange, de modo que haga una orbita circular respecto del centro de masa
 vx = -3.23*np.cos(np.pi/6)
 vy = 3.23*np.sin(np.pi/6)
 
-
+#Realizamos tres iteraciones de la clase planets. Una estrella en el origen, un planeta de masa 1 a 100 unidades de distancia horizontales, y un troyano de masa 0.005 en las posiciones del punto 5 de lagrange antes definidas
 star = planet(1047.,np.array([[0.],[0.]]),np.array([[0.],[0.]]))
 planet1 = planet(1.,np.array([[0.],[3.23]]),np.array([[100.],[0.]]))
 troyan = planet(0.005,np.array([[vx],[vy]]),np.array([[x],[y]]))
+#Integramos su movimiento y guardamos en una lista de resultados
 R1 = integrate(star,planet1,troyan)
 
+#Realizamos tres iteraciones de la clase planets. Una estrella en el origen, un planeta de masa 1 a 100 unidades de distancia horizontales, y un troyano de masa 0.005 en una posicion muy cercana al punto 5 de Lagrange, pero lo suficientemente lejano para que se afecte su movimiento.
 star = planet(1047.,np.array([[0.],[0.]]),np.array([[0.],[0.]]))
 planet1 = planet(1.,np.array([[0.],[3.23]]),np.array([[100.],[0.]]))
 ptroyan = planet(0.005,np.array([[vx],[vy]]),np.array([[x+5.],[y+5.]]))
+#Integramos su movimiento y guardamos en una lista de resultados
 R2 = integrate(star,planet1,ptroyan)
 
+#Realizamos tres iteraciones de la clase planets. Una estrella en el origen, un planeta de masa 10 a 100 unidades de distancia horizontales, y un troyano de masa 0.005 en las posiciones del punto 5 de lagrange antes definidas
 star = planet(1047.,np.array([[0.],[0.]]),np.array([[0.],[0.]]))
 planet2 = planet(10.,np.array([[0.],[3.23]]),np.array([[100.],[0.]]))
 troyan = planet(0.005,np.array([[vx],[vy]]),np.array([[x],[y]]))
+#Integramos su movimiento y guardamos en una lista de resultados
 R3 = integrate(star,planet2,troyan)
 
+#Realizamos tres iteraciones de la clase planets. Una estrella en el origen, un planeta de masa 20 a 100 unidades de distancia horizontales, y un troyano de masa 0.005 en las posiciones del punto 5 de lagrange antes definidas
 star = planet(1047.,np.array([[0.],[0.]]),np.array([[0.],[0.]]))
 planet3 = planet(20.,np.array([[0.],[3.23]]),np.array([[100.],[0.]]))
 troyan = planet(0.005,np.array([[vx],[vy]]),np.array([[x],[y]]))
+#Integramos su movimiento y guardamos en una lista de resultados
 R4 = integrate(star,planet3,troyan)
 
+#Realizamos tres iteraciones de la clase planets. Una estrella en el origen, un planeta de masa 30 a 100 unidades de distancia horizontales, y un troyano de masa 0.005 en las posiciones del punto 5 de lagrange antes definidas
 star = planet(1047.,np.array([[0.],[0.]]),np.array([[0.],[0.]]))
 planet4 = planet(30.,np.array([[0.],[3.23]]),np.array([[100.],[0.]]))
 troyan = planet(0.005,np.array([[vx],[vy]]),np.array([[x],[y]]))
+#Integramos su movimiento y guardamos en una lista de resultados
 R5 = integrate(star,planet4,troyan)
 
+#Realizamos tres iteraciones de la clase planets. Una estrella en el origen, un planeta de masa 40 a 100 unidades de distancia horizontales, y un troyano de masa 0.005 en las posiciones del punto 5 de lagrange antes definidas
 star = planet(1047.,np.array([[0.],[0.]]),np.array([[0.],[0.]]))
 planet5 = planet(40.,np.array([[0.],[3.23]]),np.array([[100.],[0.]]))
 troyan = planet(0.005,np.array([[vx],[vy]]),np.array([[x],[y]]))
+#Integramos su movimiento y guardamos en una lista de resultados
 R6 = integrate(star,planet5,troyan)
 
 
 
-
+#Definimos las variables adecuadas para realizar los tres subplots de la primera grafica. Estos datos se encuentras en la lista de resultados R1
 f, (ax1, ax2, ax3) = plt.subplots(3, sharex = True)
 ax1.grid(True)
 ax1.set_title("Posicion de los cuerpos relativa al origen")
@@ -137,8 +149,10 @@ ax3.legend(loc=0)
 plt.savefig("OrbitsPLOT.pdf")
 plt.close()
 
+#Calculamos las posiciones relativas del planeta con respecto al troyano en los resultados sin perturbacion del troyano (R1) y del troyano perturbado (R2)
 r1 = relative(R1[2],R1[3],R1[4],R1[5])
 r2 = relative(R2[2],R2[3],R2[4],R2[5])
+#Definimos la variables necesarias para hacer la graficas de estas dos cantidades
 plt.grid(True)
 plt.title("Posicion relativa del troyano")
 plt.xlim(-150,150)
@@ -147,6 +161,7 @@ plt.plot(r1[0],r1[1],label="Sin perturbacion")
 plt.plot(r2[0],r2[1],label="Con perturbacion")
 plt.savefig("Troyano.pdf")
 
+#Definimos las variables para hacer una grafica en 4 subplots de la posicion del troyano en los resultados donde se vario la masa del planeta R3, R4, R5 y R6.  
 f, (ax1, ax2, ax3, ax4) = plt.subplots(4, sharex = True)
 ax1.grid(True)
 ax1.set_title("Posicion del troyano con diferente masa del planeta")
