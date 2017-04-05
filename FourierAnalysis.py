@@ -4,14 +4,15 @@ import matplotlib.pyplot as plt
 from scipy.io import wavfile as sciwav
 import numpy.fft as fft
 #Leemos el archivo usando las funciones de wavfile 
+dt = 1. / ( 44100 )
 Tr = sciwav.read('trumpet.wav')[1]
 Vi = sciwav.read('violin.wav')[1]
 #Organizamos los datos en una lista para cada uno de los instrumentos 
 fTr = fft.fft(Tr)
 fVi = fft.fft(Vi)
 #Calculamos las frecuencias asociadas y hacemos el shift de modo que deje las frecuencias zero en el centro del espectro
-Vifreq = fft.fftshift(fft.fftfreq(Vi.size,d=0.001))
-Trfreq = fft.fftshift(fft.fftfreq(Tr.size,d=0.001))
+Vifreq = fft.fftfreq(Vi.size,d=dt)
+Trfreq = fft.fftfreq(Tr.size,d=dt)
 #Organizamos dos matrices que van a contener los datos para graficarlos
 v = [[],[]]
 t = [[],[]]
@@ -26,12 +27,12 @@ for i in range(Trfreq.size):
         t[1].append(fTr[i].real)
 #Establecemos las variables adecuadas para hacer la grafica dividida en dos subplots
 f,(ax1,ax2) = plt.subplots(2, sharex=True)
-f.set_size_inches(10.,10.)
+#f.set_size_inches(10.,10.)
 ax1.plot(v[0],v[1])
 ax1.set_title("Espectros de Frecuencia")
 ax2.plot(t[0],t[1])
 ax2.set_xlabel("Frecuencias")
-plt.savefig('ViolinTrompeta.pdf')
+plt.savefig('ViolinTrompeta.png')
 plt.close()
 #Definimos la funcion que elimina la frecuencia fundamental. Toma como parametro la transformada de fourier de un conjunto de datos y un intervalo de frecuencias y retorna la lista de los datos modificados en el dominio del tiempo.
 def filtrofun(fData,Fr):
@@ -51,10 +52,10 @@ def filtrofun(fData,Fr):
 	ModData = fft.ifft(fData1)
 	#Definimos las variables necesarias para hacer las graficas antes y despues del accionar del filtro
 	f,(ax1,ax2) = plt.subplots(2, sharex=True)
-	f.set_size_inches( 10.,10. )
+#	f.set_size_inches( 10.,10. )
 	ax1.plot(Fr,DataNorm)
 	ax2.plot(Fr,abs(fData1))
-	plt.show()
+	plt.savefig("violin_fundamental.png")
 	#Retorna la parte real de la transformada inversa de los datos
 	return ModData.real
 #Definimos la funcion del filtro pasa altas que recibe como parametros la transformada de Fourier de unos datos y una lista de frecuencias. Retorna la lista de los datos modificados en el dominio del tiempo
@@ -63,6 +64,9 @@ def filtropasaaltas(fData,Fr):
 	ModData = fData.copy()
 	#Hacemos cero los datos en todas las posiciones en las que la magnitud de la frecuencia sea menor a 2000
 	ModData[abs(Fr) < 2000] = 0.0
+	plt.plot(Fr,abs(ModData))
+	plt.savefig("Violin_pasaaltas.png")
+	plt.close()
 	#Hacemos la transformada inversa de los datos modificados
 	ModData = fft.ifft(ModData)	
 	#Retorna la parte real de la transformada inversa
@@ -73,6 +77,10 @@ def filtropasabajas(fData, Fr):
 	ModData = fData.copy()
 	#Hacemos cero los datos en todas las posiciones en las que la magnitud de la frcuencia sea mayor a 2000
 	ModData[abs(Fr) > 2000] = 0.0
+
+	plt.plot(Fr,abs(ModData))
+	plt.savefig("Violin_pasabajas.png")
+	plt.close()
 	#Realizamos la transformada inversa de los datos modificados
 	ModData = fft.ifft(ModData)
 	#Retorna la parte real de la transformada inversa
@@ -108,14 +116,18 @@ def filtropasabanda(fData,Fr,k):
 		else:	
 			ModData[i] = 0.0
 	#Hacemos la grafica de los que queda
-	plt.plot(Fr,ModData.real)
-	plt.show()
+	plt.plot(Fr,abs(ModData))
+	plt.savefig("Violin_pasabanda.png")
+	plt.close()
 	#Hacemos la transformada inversa 
 	ModData = fft.ifft(ModData)
 	#Retornamos la parte real de la transformada inversa 
 	return ModData.real
 
-print filtropasabanda(fVi,Vifreq,10)
-ModViolin = filtrofun(fVi,Vifreq)[0].real.astype(int)
-sciwav.write('violin_picoshit.wav',ModViolin)
+filtropasabanda(fVi,Vifreq,1000)
+filtropasaaltas(fVi,Vifreq)
+filtropasabajas(fVi,Vifreq)
+ModViolin = filtrofun(fVi,Vifreq)
+print ModViolin
+sciwav.write('violin_pico.wav',44100,ModViolin)
 	
