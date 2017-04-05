@@ -41,7 +41,7 @@ class planet:
 		return 0.
 
 
-#Funcion que integra las ecuaciones de movimento de cada uno de los tres planetas que recibe como parametro.
+#Funcion que integra las ecuaciones de movimento de cada uno de los tres planetas que recibe como parametro. Retorna una lista que contiene la lista de las posiciones de los 3 planetas que recibe como parametro
 def integrate(p1,p2,p3):
 	h = 0.1
 	tmax = 200.
